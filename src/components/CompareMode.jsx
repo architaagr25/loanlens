@@ -88,11 +88,6 @@ export default function CompareMode() {
           />
         ))}
       </div>
-
-      <p className="text-muted text-xs">
-        Open this page in a second tab — inputs, theme, and mode stay in sync via
-        the BroadcastChannel API.
-      </p>
     </section>
   );
 }
