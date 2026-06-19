@@ -9,6 +9,8 @@ import InputPanel from "./InputPanel";
 import SummaryCards from "./SummaryCards";
 import PrincipalInterestBar from "./PrincipalInterestBar";
 import AmortizationView from "./AmortizationView";
+import SensitivityGrid from "./SensitivityGrid";
+import CompareMode from "./CompareMode";
 
 // Top-level layout. Reads the synced inputs, derives the summary (memoized so
 // it only recomputes when inputs change), and renders the active mode.
@@ -46,15 +48,12 @@ export default function Workspace() {
               />
             </section>
 
-            {/* Sensitivity grid arrives in Phase 6 */}
-            <Placeholder title="Sensitivity Analysis" note="Coming in Phase 6" />
+            <SensitivityGrid />
           </div>
         </div>
       )}
 
-      {mode === "compare" && (
-        <Placeholder title="Compare Scenarios" note="Coming in Phase 6" />
-      )}
+      {mode === "compare" && <CompareMode />}
 
       {mode === "prepayment" && (
         <Placeholder title="Prepayment Planner" note="Coming in Phase 7" />
