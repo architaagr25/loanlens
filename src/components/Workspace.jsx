@@ -8,6 +8,7 @@ import ModeTabs from "./ModeTabs";
 import InputPanel from "./InputPanel";
 import SummaryCards from "./SummaryCards";
 import PrincipalInterestBar from "./PrincipalInterestBar";
+import AmortizationView from "./AmortizationView";
 
 // Top-level layout. Reads the synced inputs, derives the summary (memoized so
 // it only recomputes when inputs change), and renders the active mode.
@@ -59,10 +60,9 @@ export default function Workspace() {
         <Placeholder title="Prepayment Planner" note="Coming in Phase 7" />
       )}
 
-      {/* Amortization schedule (single & prepayment) arrives in Phase 5 */}
-      {mode !== "compare" && (
-        <Placeholder title="Amortization Schedule" note="Coming in Phase 5" />
-      )}
+      {/* Amortization schedule shows in single mode (prepayment mode gets its
+          own prepayment-aware schedule in Phase 7). */}
+      {mode === "single" && <AmortizationView />}
     </div>
   );
 }
