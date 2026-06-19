@@ -11,6 +11,7 @@ import PrincipalInterestBar from "./PrincipalInterestBar";
 import AmortizationView from "./AmortizationView";
 import SensitivityGrid from "./SensitivityGrid";
 import CompareMode from "./CompareMode";
+import PrepaymentPlanner from "./PrepaymentPlanner";
 
 // Top-level layout. Reads the synced inputs, derives the summary (memoized so
 // it only recomputes when inputs change), and renders the active mode.
@@ -56,21 +57,18 @@ export default function Workspace() {
       {mode === "compare" && <CompareMode />}
 
       {mode === "prepayment" && (
-        <Placeholder title="Prepayment Planner" note="Coming in Phase 7" />
+        <>
+          <PrepaymentPlanner />
+          <AmortizationView
+            title="Adjusted Schedule"
+            subtitle="Amortization reflecting your prepayments"
+            usePrepayments
+          />
+        </>
       )}
 
-      {/* Amortization schedule shows in single mode (prepayment mode gets its
-          own prepayment-aware schedule in Phase 7). */}
+      {/* Single mode shows the base (no-prepayment) schedule. */}
       {mode === "single" && <AmortizationView />}
     </div>
-  );
-}
-
-function Placeholder({ title, note }) {
-  return (
-    <section className="card p-5">
-      <h2 className="font-semibold">{title}</h2>
-      <p className="text-muted text-sm mt-1">{note}</p>
-    </section>
   );
 }
