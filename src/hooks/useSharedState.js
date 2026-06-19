@@ -33,6 +33,7 @@ import {
   canRedo,
 } from "@/lib/sharedDoc";
 import { CHANNEL_NAME, STORAGE_KEY, DEFAULT_STATE } from "@/lib/constants";
+import { encodeInputs, decodeInputs } from "@/lib/url";
 
 const SharedStateContext = createContext(null);
 
@@ -95,11 +96,14 @@ export function SharedStateProvider({ children }) {
     writeStored(incoming.present);
   }, []);
 
-  // Mount: hydrate from localStorage, open the channel, wire the listener.
+  // Mount: hydrate from localStorage + URL, open the channel, wire the listener.
+  // Precedence: URL query (shareable link) > localStorage > defaults.
   useEffect(() => {
     const stored = readStored();
-    if (stored) {
-      const hydratedDoc = createDoc(stored);
+    const urlInputs = decodeInputs(window.location.search);
+    if (stored || Object.keys(urlInputs).length > 0) {
+      const present = { ...DEFAULT_STATE, ...(stored ?? {}), ...urlInputs };
+      const hydratedDoc = createDoc(present);
       docRef.current = hydratedDoc;
       metaRef.current = { rev: hydratedDoc.rev, ts: Date.now() };
       setDoc(hydratedDoc);
@@ -142,6 +146,25 @@ export function SharedStateProvider({ children }) {
     if (doc.present.theme === "dark") root.classList.add("dark");
     else root.classList.remove("dark");
   }, [doc.present.theme, hydrated]);
+
+  // Reflect the current inputs into the URL (shareable link). Debounced and via
+  // replaceState so it doesn't flood browser history while dragging a slider.
+  useEffect(() => {
+    if (!hydrated) return;
+    const { amount, rate, tenure, mode, theme } = doc.present;
+    const id = setTimeout(() => {
+      const qs = encodeInputs({ amount, rate, tenure, mode, theme });
+      window.history.replaceState(null, "", `?${qs}`);
+    }, 300);
+    return () => clearTimeout(id);
+  }, [
+    hydrated,
+    doc.present.amount,
+    doc.present.rate,
+    doc.present.tenure,
+    doc.present.mode,
+    doc.present.theme,
+  ]);
 
   // ---- Public setters (each commits → syncs) ----
   const setField = useCallback(

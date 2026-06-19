@@ -2,6 +2,7 @@
 
 import { usePresence } from "@/hooks/usePresence";
 import ThemeToggle from "./ThemeToggle";
+import UndoRedo from "./UndoRedo";
 
 // Top bar: product identity on the left; tab id + LEADER badge + live tab count
 // + theme toggle on the right (matches the design reference header).
@@ -24,6 +25,7 @@ export default function Header() {
       </div>
 
       <div className="flex items-center gap-2">
+        <UndoRedo />
         <span className="card-muted px-2.5 py-1 rounded-lg text-sm font-medium">
           {label}
         </span>

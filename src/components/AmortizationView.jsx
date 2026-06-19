@@ -5,6 +5,7 @@ import { useSharedState } from "@/hooks/useSharedState";
 import { buildSchedule, findBreakEvenMonth } from "@/lib/emi";
 import AmortTable from "./AmortTable";
 import AmortChart from "./AmortChart";
+import ExportCsvButton from "./ExportCsvButton";
 
 const ROWS_PER_PAGE = 12;
 
@@ -66,6 +67,7 @@ export default function AmortizationView({
               Chart
             </ToggleBtn>
           </div>
+          <ExportCsvButton rows={rows} />
         </div>
       </div>
 
