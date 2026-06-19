@@ -3,6 +3,7 @@
 // TEMPORARY Phase 2 sync demo — proves cross-tab state sharing works before the
 // full workspace UI is built (Phase 4+). This page is replaced later.
 import { useSharedState } from "@/hooks/useSharedState";
+import { usePresence } from "@/hooks/usePresence";
 import { formatINR } from "@/lib/format";
 
 export default function Page() {
@@ -16,17 +17,29 @@ export default function Page() {
     canUndo,
     canRedo,
   } = useSharedState();
+  const { label, tabCount, isLeader } = usePresence();
 
   return (
     <main className="min-h-screen flex items-center justify-center p-8">
       <div className="card p-8 w-full max-w-lg space-y-6">
-        <div>
+        <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">LoanLens — Sync Demo</h1>
-          <p className="text-muted text-sm">
-            Open this page in a second tab. Changes sync instantly via the
-            BroadcastChannel API. {hydrated ? "" : "(hydrating…)"}
-          </p>
+          <div className="flex items-center gap-2 text-sm">
+            <span className="font-medium">{label}</span>
+            {isLeader && (
+              <span className="px-2 py-0.5 rounded-full bg-brand-100 text-brand-700 text-xs font-semibold">
+                LEADER
+              </span>
+            )}
+            <span className="card-muted px-2 py-0.5 rounded-full text-xs">
+              {tabCount} {tabCount === 1 ? "tab" : "tabs"}
+            </span>
+          </div>
         </div>
+        <p className="text-muted text-sm">
+          Open this page in more tabs. Inputs, theme, and presence sync via the
+          BroadcastChannel API. {hydrated ? "" : "(hydrating…)"}
+        </p>
 
         <div className="space-y-2">
           <label className="text-sm font-medium">

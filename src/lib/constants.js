@@ -28,6 +28,12 @@ export const MAX_SCENARIOS = 3;
 export const CHANNEL_NAME = "loanlens";
 export const STORAGE_KEY = "loanlens:state";
 
+// Presence (heartbeat) — kept on its own channel so pings don't mix with state.
+export const PRESENCE_CHANNEL = "loanlens:presence";
+export const HEARTBEAT_INTERVAL = 2000; // how often each tab announces itself
+export const PRUNE_INTERVAL = 1000; // how often we sweep for dead tabs
+export const STALE_MS = 5000; // a tab silent this long is considered closed
+
 // Sensitivity grid offsets (assignment: current ±1/2/3% rate, ±6/12/24 months).
 export const RATE_OFFSETS = [-3, -2, -1, 0, 1, 2, 3];
 export const TENURE_OFFSETS = [-24, -12, -6, 0, 6, 12, 24];
