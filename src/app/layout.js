@@ -1,4 +1,5 @@
 import "./globals.css";
+import { SharedStateProvider } from "@/hooks/useSharedState";
 
 export const metadata = {
   title: "LoanLens — EMI Workspace",
@@ -24,7 +25,9 @@ export default function RootLayout({ children }) {
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
       </head>
-      <body>{children}</body>
+      <body>
+        <SharedStateProvider>{children}</SharedStateProvider>
+      </body>
     </html>
   );
 }
