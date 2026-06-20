@@ -20,7 +20,7 @@ export default function Header() {
           </div>
           <div>
             <h1 className="font-bold leading-tight">EMI Workspace</h1>
-            <p className="text-muted text-xs">
+            <p className="text-muted text-xs hidden sm:block">
               Loan calculator · synced across tabs
             </p>
           </div>

@@ -69,7 +69,7 @@ export default function CompareMode() {
         <button
           onClick={addScenario}
           disabled={scenarios.length >= MAX_SCENARIOS}
-          className="px-3 py-2 rounded-lg card-muted text-sm font-medium hover:opacity-80 transition disabled:opacity-40"
+          className="px-3 py-2 rounded-lg card-muted text-sm font-medium hover:opacity-80 transition disabled:opacity-40 w-full sm:w-auto"
         >
           + Add Scenario
         </button>

@@ -63,8 +63,8 @@ export default function PrepaymentPlanner() {
         <div className="space-y-4">
           <div className="card-muted p-4 space-y-4">
             <p className="text-sm font-medium">Add a one-time prepayment</p>
-            <div className="flex items-end gap-3">
-              <Field label="Month" className="flex-1">
+            <div className="flex flex-wrap items-end gap-3">
+              <Field label="Month" className="flex-1 min-w-[70px]">
                 <input
                   type="number"
                   min={1}
@@ -74,7 +74,7 @@ export default function PrepaymentPlanner() {
                   className="card px-3 py-2 rounded-lg w-full outline-none"
                 />
               </Field>
-              <Field label="Amount (₹)" className="flex-1">
+              <Field label="Amount (₹)" className="flex-1 min-w-[110px]">
                 <input
                   type="number"
                   min={1}
@@ -86,7 +86,7 @@ export default function PrepaymentPlanner() {
               <button
                 onClick={add}
                 disabled={!valid}
-                className="px-4 py-2 rounded-lg bg-brand-600 text-white text-sm font-medium disabled:opacity-40 shrink-0"
+                className="px-4 py-2 rounded-lg bg-brand-600 text-white text-sm font-medium disabled:opacity-40 shrink-0 w-full sm:w-auto"
               >
                 Add
               </button>
