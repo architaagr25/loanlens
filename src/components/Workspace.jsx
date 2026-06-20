@@ -25,9 +25,10 @@ export default function Workspace() {
   );
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 max-w-6xl mx-auto space-y-5">
+    <div className="min-h-screen">
       <Header />
-      <ModeTabs />
+      <div className="p-4 sm:p-6 max-w-6xl mx-auto space-y-5">
+        <ModeTabs />
 
       {mode === "single" && (
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,360px)_1fr] gap-5">
@@ -69,8 +70,9 @@ export default function Workspace() {
         </>
       )}
 
-      {/* Single mode shows the base (no-prepayment) schedule. */}
-      {mode === "single" && <AmortizationView />}
+        {/* Single mode shows the base (no-prepayment) schedule. */}
+        {mode === "single" && <AmortizationView />}
+      </div>
     </div>
   );
 }
