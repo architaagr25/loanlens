@@ -4,6 +4,7 @@ import { scheduleToCsv } from "@/lib/csv";
 
 // downloads the rows as a CSV - build a Blob, click a throwaway link. no backend.
 export default function ExportCsvButton({ rows, filename = "amortization.csv" }) {
+  // make a csv blob and click a hidden link to download it
   const download = () => {
     const csv = scheduleToCsv(rows);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });

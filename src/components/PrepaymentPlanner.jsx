@@ -5,6 +5,7 @@ import { useSharedState } from "@/hooks/useSharedState";
 import { prepaymentImpact } from "@/lib/emi";
 import { formatINR, formatMonths } from "@/lib/format";
 
+// quick unique id for a prepayment
 function newId() {
   if (typeof crypto !== "undefined" && crypto.randomUUID) {
     return "p-" + crypto.randomUUID().slice(0, 6);
@@ -27,6 +28,7 @@ export default function PrepaymentPlanner() {
     [amount, rate, tenure, prepayments]
   );
 
+  // only let you add if the month's in range and the amount is positive
   const monthNum = Number(month);
   const amtNum = Number(amt);
   const valid =
@@ -47,6 +49,7 @@ export default function PrepaymentPlanner() {
   const remove = (id) =>
     setPrepayments(prepayments.filter((p) => p.id !== id));
 
+  // show them in month order
   const sorted = [...prepayments].sort((a, b) => a.month - b.month);
 
   return (
@@ -172,6 +175,7 @@ export default function PrepaymentPlanner() {
   );
 }
 
+// label + the input under it
 function Field({ label, children, className = "" }) {
   return (
     <label className={"space-y-1 " + className}>
@@ -181,6 +185,7 @@ function Field({ label, children, className = "" }) {
   );
 }
 
+// tiny label/value pair for the impact grid
 function Stat({ label, value, accent }) {
   return (
     <div>

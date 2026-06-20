@@ -28,11 +28,14 @@ export default function SliderInput({
     if (!focused.current) setText(String(value));
   }, [value]);
 
+  // fill % for the slider track
   const pct = max > min ? ((value - min) / (max - min)) * 100 : 0;
   const fill = `linear-gradient(to right, #4f46e5 ${pct}%, var(--border) ${pct}%)`;
 
+  // slider's already in range, clamp anyway
   const handleSlider = (e) => onChange(clamp(Number(e.target.value), min, max));
 
+  // let you type anything mid-edit
   const handleText = (e) => {
     const raw = e.target.value;
     setText(raw);
@@ -40,6 +43,7 @@ export default function SliderInput({
     if (raw !== "" && Number.isFinite(n)) onChange(n); // live while typing, clamp later
   };
 
+  // clamp when you click away
   const handleBlur = () => {
     focused.current = false;
     const n = Number(text);

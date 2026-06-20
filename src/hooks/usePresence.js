@@ -22,6 +22,7 @@ import {
   STALE_MS,
 } from "@/lib/constants";
 
+// short random id so each tab can tell itself apart from the others
 function makeId() {
   if (typeof crypto !== "undefined" && crypto.randomUUID) {
     return crypto.randomUUID().slice(0, 8);

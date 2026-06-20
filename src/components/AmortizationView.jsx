@@ -106,6 +106,7 @@ export default function AmortizationView({
   );
 }
 
+// the Table / Chart pill - active one gets the white background
 function ToggleBtn({ active, onClick, children }) {
   return (
     <button
@@ -122,6 +123,7 @@ function ToggleBtn({ active, onClick, children }) {
   );
 }
 
+// prev / next button for the table
 function PageBtn({ disabled, onClick, children }) {
   return (
     <button

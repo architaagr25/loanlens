@@ -13,6 +13,7 @@ export function monthlyRate(annualRatePct) {
   return annualRatePct / 12 / 100;
 }
 
+// keep a number within [min, max]
 export function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
@@ -131,6 +132,7 @@ export function findBreakEvenMonth(rows) {
   return null;
 }
 
+// add up all the interest across a schedule
 export function totalInterestOf(rows) {
   return rows.reduce((sum, row) => sum + row.interestPaid, 0);
 }

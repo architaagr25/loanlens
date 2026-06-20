@@ -17,6 +17,7 @@ export default function SummaryCards({ emi, totalInterest, totalPayable }) {
   );
 }
 
+// one stat tile, accent = the indigo EMI one
 function Card({ label, value, accent }) {
   return (
     <div

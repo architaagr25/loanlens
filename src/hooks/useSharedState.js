@@ -233,6 +233,7 @@ export function SharedStateProvider({ children }) {
   );
 }
 
+// grab the shared state anywhere under the provider
 export function useSharedState() {
   const ctx = useContext(SharedStateContext);
   if (!ctx) {

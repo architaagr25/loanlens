@@ -6,6 +6,7 @@ import { summarize, lowestCostScenarioIndex } from "@/lib/emi";
 import { MAX_SCENARIOS, DEFAULT_STATE } from "@/lib/constants";
 import ScenarioCard from "./ScenarioCard";
 
+// quick unique id for a new scenario
 function newId() {
   if (typeof crypto !== "undefined" && crypto.randomUUID) {
     return "s-" + crypto.randomUUID().slice(0, 6);
@@ -29,11 +30,13 @@ export default function CompareMode() {
     [scenarios]
   );
 
+  // edit one scenario and remember it as the last one touched
   const updateScenario = (id, partial) => {
     const next = scenarios.map((s) => (s.id === id ? { ...s, ...partial } : s));
     patch({ scenarios: next, lastActiveScenarioId: id });
   };
 
+  // add a new card (copy of the last one), up to the max
   const addScenario = () => {
     if (scenarios.length >= MAX_SCENARIOS) return;
     const base = scenarios[scenarios.length - 1] ?? DEFAULT_STATE;
@@ -50,6 +53,7 @@ export default function CompareMode() {
     });
   };
 
+  // drop a card
   const removeScenario = (id) => {
     if (scenarios.length <= 1) return; // keep at least one card around
     patch({ scenarios: scenarios.filter((s) => s.id !== id) });

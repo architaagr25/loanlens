@@ -93,6 +93,7 @@ export default function ScenarioCard({
   );
 }
 
+// one results row, label left / value right
 function Row({ label, value, accent }) {
   return (
     <div className="flex items-center justify-between">

@@ -37,6 +37,7 @@ function pickPresent(state) {
   };
 }
 
+// start a fresh doc with empty history
 export function createDoc(present = DEFAULT_STATE) {
   return {
     present: pickPresent(present),
@@ -89,6 +90,7 @@ export function redo(doc) {
   };
 }
 
+// is there anything to undo / redo (for enabling the buttons)
 export function canUndo(doc) {
   return doc.past.length > 0;
 }

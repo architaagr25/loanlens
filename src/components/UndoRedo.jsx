@@ -51,6 +51,7 @@ export default function UndoRedo() {
   );
 }
 
+// round icon button for the undo/redo arrows
 function IconBtn({ label, disabled, onClick, children }) {
   return (
     <button
