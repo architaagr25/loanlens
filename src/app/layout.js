@@ -2,8 +2,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import { SharedStateProvider } from "@/hooks/useSharedState";
 
-// Inter, same clean sans-serif as the reference. exposed as --font-sans so
-// tailwind's font-sans picks it up.
+// load Inter and expose it as --font-sans so tailwind's font-sans uses it
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
