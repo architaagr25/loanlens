@@ -30,12 +30,14 @@ export default function Workspace() {
       <ModeTabs />
 
       {mode === "single" && (
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,360px)_1fr] gap-5 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,360px)_1fr] gap-5">
           <InputPanel />
 
           <div className="space-y-5">
             <section className="card p-5 space-y-5">
-              <h2 className="font-semibold">Summary</h2>
+              <h2 className="font-semibold border-b divider pb-3 -mx-5 px-5">
+                Summary
+              </h2>
               <SummaryCards
                 emi={summary.emi}
                 totalInterest={summary.totalInterest}

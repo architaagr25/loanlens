@@ -1,5 +1,14 @@
 import "./globals.css";
+import { Inter } from "next/font/google";
 import { SharedStateProvider } from "@/hooks/useSharedState";
+
+// Inter, same clean sans-serif as the reference. exposed as --font-sans so
+// tailwind's font-sans picks it up.
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
 export const metadata = {
   title: "LoanLens — EMI Workspace",
@@ -21,7 +30,7 @@ const themeBootstrap = `
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
       </head>

@@ -51,7 +51,7 @@ export default function PrepaymentPlanner() {
 
   return (
     <section className="card p-5 space-y-4">
-      <div>
+      <div className="border-b divider pb-3 -mx-5 px-5">
         <h2 className="font-semibold">Prepayment Planner</h2>
         <p className="text-muted text-xs">
           Schedule lump-sum payments and see interest saved

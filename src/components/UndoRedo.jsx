@@ -34,7 +34,7 @@ export default function UndoRedo() {
   }, [undo, redo]);
 
   return (
-    <div className="card-muted p-1 inline-flex gap-1 rounded-lg">
+    <div className="card-muted p-1 inline-flex gap-1 rounded-full">
       <IconBtn label="Undo (Ctrl+Z)" disabled={!canUndo} onClick={undo}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M9 14L4 9l5-5" />
@@ -58,7 +58,7 @@ function IconBtn({ label, disabled, onClick, children }) {
       disabled={disabled}
       aria-label={label}
       title={label}
-      className="w-8 h-8 grid place-items-center rounded-md hover:opacity-80 transition disabled:opacity-30"
+      className="w-8 h-8 grid place-items-center rounded-full hover:opacity-80 transition disabled:opacity-30"
     >
       {children}
     </button>

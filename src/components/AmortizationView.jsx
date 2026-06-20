@@ -44,7 +44,7 @@ export default function AmortizationView({
 
   return (
     <section className="card p-5 space-y-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
+      <div className="flex flex-wrap items-start justify-between gap-3 border-b divider pb-4 -mx-5 px-5">
         <div>
           <h2 className="font-semibold">{title}</h2>
           <p className="text-muted text-xs">{subtitle}</p>

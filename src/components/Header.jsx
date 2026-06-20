@@ -25,15 +25,15 @@ export default function Header() {
 
       <div className="flex flex-wrap items-center gap-2">
         <UndoRedo />
-        <span className="card-muted px-2.5 py-1 rounded-lg text-sm font-medium">
+        <span className="card-muted px-3 py-1 rounded-full text-sm font-medium">
           {label}
         </span>
         {isLeader && (
-          <span className="px-2 py-1 rounded-lg bg-brand-100 text-brand-700 text-[11px] font-semibold tracking-wide">
+          <span className="px-2.5 py-1 rounded-full bg-brand-100 text-brand-700 text-[11px] font-semibold tracking-wide">
             LEADER
           </span>
         )}
-        <span className="card-muted px-2.5 py-1 rounded-lg text-sm flex items-center gap-1.5">
+        <span className="card-muted px-3 py-1 rounded-full text-sm flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
           {tabCount} {tabCount === 1 ? "tab" : "tabs"}
         </span>

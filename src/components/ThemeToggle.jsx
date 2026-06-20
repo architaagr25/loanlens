@@ -12,7 +12,7 @@ export default function ThemeToggle() {
       onClick={toggleTheme}
       aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
       title={`Switch to ${isDark ? "light" : "dark"} mode`}
-      className="w-9 h-9 grid place-items-center rounded-lg card-muted hover:opacity-80 transition"
+      className="w-9 h-9 grid place-items-center rounded-full card-muted hover:opacity-80 transition"
     >
       {isDark ? (
         // Sun

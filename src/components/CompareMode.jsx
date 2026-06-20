@@ -57,7 +57,7 @@ export default function CompareMode() {
 
   return (
     <section className="card p-5 space-y-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
+      <div className="flex flex-wrap items-start justify-between gap-3 border-b divider pb-4 -mx-5 px-5">
         <div>
           <h2 className="font-semibold">Compare Scenarios</h2>
           <p className="text-muted text-xs">
