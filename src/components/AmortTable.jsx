@@ -2,9 +2,8 @@
 
 import { formatINR } from "@/lib/format";
 
-// One page of the amortization schedule. Columns match the design reference:
-// Month · EMI · Principal · Interest · Prepayment · Balance. The break-even row
-// is highlighted; prepayments show "—" when none.
+// one page of the schedule table. break-even row is highlighted, and the
+// prepayment column just shows "—" on months without one.
 export default function AmortTable({ rows, breakEvenMonth }) {
   return (
     <div className="overflow-x-auto">

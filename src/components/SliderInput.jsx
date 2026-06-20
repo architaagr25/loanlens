@@ -3,10 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { clamp } from "@/lib/emi";
 
-// A labelled control where a number input and a range slider stay in sync:
-// editing one instantly updates the other. The slider always emits clamped
-// values; the number box allows free typing and clamps on blur, so you can
-// type "1500000" without it fighting you mid-keystroke.
+// number box + slider that stay in sync - edit one, the other follows.
+// the slider is always clamped, but the text box lets you type freely and only
+// clamps on blur, otherwise typing "1500000" fights you on every keystroke.
 export default function SliderInput({
   label,
   value,
@@ -22,8 +21,8 @@ export default function SliderInput({
   const [text, setText] = useState(String(value));
   const focused = useRef(false);
 
-  // When the value changes from elsewhere (e.g. another tab, undo, slider),
-  // reflect it in the text box — but never while the user is typing in it.
+  // if the value changes from outside (other tab, undo, the slider), sync the
+  // text box - but not while you're typing in it
   useEffect(() => {
     if (!focused.current) setText(String(value));
   }, [value]);
@@ -37,7 +36,7 @@ export default function SliderInput({
     const raw = e.target.value;
     setText(raw);
     const n = Number(raw);
-    if (raw !== "" && Number.isFinite(n)) onChange(n); // live, unclamped while typing
+    if (raw !== "" && Number.isFinite(n)) onChange(n); // live while typing, clamp later
   };
 
   const handleBlur = () => {

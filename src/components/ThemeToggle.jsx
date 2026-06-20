@@ -2,8 +2,7 @@
 
 import { useSharedState } from "@/hooks/useSharedState";
 
-// Dark/light toggle. Theme is just another synced field, so flipping it here
-// propagates to every open tab via the same BroadcastChannel path.
+// dark/light button. theme is just a synced field, so this flips every tab.
 export default function ThemeToggle() {
   const { state, toggleTheme } = useSharedState();
   const isDark = state.theme === "dark";

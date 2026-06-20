@@ -13,10 +13,9 @@ function newId() {
   return "s-" + Math.random().toString(36).slice(2, 8);
 }
 
-// Up to 3 side-by-side scenarios. Each has its own inputs; the lowest Total
-// Payable is highlighted. Scenarios are synced state, so edits flow to all tabs.
-// Editing a scenario records it as the "last active" one — when the user
-// switches back to Single mode, those values seed the single calculator.
+// up to 3 scenarios side by side, cheapest one highlighted. scenarios live in
+// shared state so they sync across tabs. editing one marks it as "last active"
+// so it can seed the single calculator when you switch back.
 export default function CompareMode() {
   const { state, patch } = useSharedState();
   const { scenarios } = state;
@@ -52,7 +51,7 @@ export default function CompareMode() {
   };
 
   const removeScenario = (id) => {
-    if (scenarios.length <= 1) return; // always keep at least one
+    if (scenarios.length <= 1) return; // keep at least one card around
     patch({ scenarios: scenarios.filter((s) => s.id !== id) });
   };
 

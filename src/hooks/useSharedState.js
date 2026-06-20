@@ -1,19 +1,15 @@
 "use client";
 
-// ──────────────────────────────────────────────────────────────────────────
-// useSharedState — the cross-tab shared workspace.
+// The cross-tab shared state. One context, one BroadcastChannel, one shared doc.
+// A local change gets committed then broadcast; an incoming change is applied
+// without re-broadcasting so we don't loop forever.
 //
-// One React context owns ONE BroadcastChannel and ONE shared document. Every
-// state change is committed to the pure document model, then broadcast to all
-// other tabs; incoming changes are applied without re-broadcasting (no loops).
-//
-// - Live sync .............. BroadcastChannel (no server, no polling)
-// - New-tab bootstrap ...... localStorage mirror (read once on mount)
-// - Undo/redo across tabs .. the whole {present,past,future} doc is what syncs
-// - SSR-safe ............... first render uses deterministic defaults; browser
-//                            APIs are touched only inside effects
-// - Race resolution ........ (rev, ts) ordering — last write wins on a tie
-// ──────────────────────────────────────────────────────────────────────────
+// Notes:
+//  - live sync is BroadcastChannel (no server, no polling)
+//  - a new tab bootstraps from localStorage + URL on mount
+//  - undo/redo syncs because the whole {present,past,future} doc is sent
+//  - first render uses fixed defaults so SSR and client match (no hydration warning)
+//  - if two tabs edit at once, (rev, ts) decides the winner - last write wins
 
 import {
   createContext,
@@ -37,45 +33,44 @@ import { encodeInputs, decodeInputs } from "@/lib/url";
 
 const SharedStateContext = createContext(null);
 
-// Read the persisted present from localStorage (browser only).
+// read the saved state from localStorage (browser only)
 function readStored() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
-    // Stored as a flat "present" so the theme-bootstrap script can read .theme.
+    // stored flat so the inline theme script in layout.js can read .theme
     return { ...DEFAULT_STATE, ...parsed };
   } catch {
     return null;
   }
 }
 
-// Persist just the present (flat) so a fresh tab/reload restores values+theme.
+// save the present so a reload/new tab comes back with the same values + theme
 function writeStored(present) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(present));
   } catch {
-    /* ignore quota / privacy-mode errors */
+    // localStorage can throw in private mode / when full - just ignore it
   }
 }
 
 export function SharedStateProvider({ children }) {
-  // Deterministic first render (matches SSR) → no hydration mismatch.
+  // start from fixed defaults so server + first client render agree
   const [doc, setDoc] = useState(() => createDoc(DEFAULT_STATE));
   const [hydrated, setHydrated] = useState(false);
 
   const channelRef = useRef(null);
-  const docRef = useRef(doc); // latest doc, for use inside event handlers
+  const docRef = useRef(doc); // latest doc, so event handlers don't read a stale one
   const metaRef = useRef({ rev: 0, ts: 0 }); // last accepted (rev, ts)
 
-  // Keep the ref in step with state so handlers never read a stale doc.
   useEffect(() => {
     docRef.current = doc;
   }, [doc]);
 
-  // Apply a doc that originated locally: persist + broadcast to other tabs.
+  // a change made in this tab: save it and tell the other tabs
   const applyLocal = useCallback((nextDoc) => {
-    if (nextDoc === docRef.current) return; // no-op commit
+    if (nextDoc === docRef.current) return; // nothing changed
     const ts = Date.now();
     docRef.current = nextDoc;
     metaRef.current = { rev: nextDoc.rev, ts };
@@ -84,7 +79,7 @@ export function SharedStateProvider({ children }) {
     channelRef.current?.postMessage({ type: "STATE", doc: nextDoc, ts });
   }, []);
 
-  // Apply a doc that arrived from another tab: update locally, do NOT re-broadcast.
+  // a change from another tab: apply it, but DON'T re-broadcast or we'd loop
   const applyRemote = useCallback((incoming, ts) => {
     const cur = metaRef.current;
     const isNewer =
@@ -96,8 +91,8 @@ export function SharedStateProvider({ children }) {
     writeStored(incoming.present);
   }, []);
 
-  // Mount: hydrate from localStorage + URL, open the channel, wire the listener.
-  // Precedence: URL query (shareable link) > localStorage > defaults.
+  // on mount: load saved/URL state, open the channel, start listening.
+  // a shared link wins over localStorage which wins over defaults.
   useEffect(() => {
     const stored = readStored();
     const urlInputs = decodeInputs(window.location.search);
@@ -110,7 +105,7 @@ export function SharedStateProvider({ children }) {
     }
     setHydrated(true);
 
-    if (typeof BroadcastChannel === "undefined") return; // unsupported browser
+    if (typeof BroadcastChannel === "undefined") return; // old browser, skip sync
     const channel = new BroadcastChannel(CHANNEL_NAME);
     channelRef.current = channel;
 
@@ -120,8 +115,8 @@ export function SharedStateProvider({ children }) {
       if (msg.type === "STATE") {
         applyRemote(msg.doc, msg.ts);
       } else if (msg.type === "REQUEST_STATE") {
-        // A newly opened tab asked for the current state (leadership bonus,
-        // Phase 3). Any tab can answer; newest (rev,ts) wins on the receiver.
+        // a new tab is asking what the current state is - reply with ours.
+        // any tab can answer; the newest (rev,ts) wins on their end anyway.
         channel.postMessage({
           type: "STATE",
           doc: docRef.current,
@@ -130,7 +125,7 @@ export function SharedStateProvider({ children }) {
       }
     };
 
-    // Ask existing tabs for the live state (so a new tab joins in-sync).
+    // ask whoever's already open for the live state so we join in sync
     channel.postMessage({ type: "REQUEST_STATE" });
 
     return () => {
@@ -139,7 +134,8 @@ export function SharedStateProvider({ children }) {
     };
   }, [applyRemote]);
 
-  // Reflect the synced theme onto <html> (rides the same sync path as inputs).
+  // push the theme onto <html>. theme is just another synced field, so this
+  // updates in every tab.
   useEffect(() => {
     if (!hydrated) return;
     const root = document.documentElement;
@@ -147,8 +143,8 @@ export function SharedStateProvider({ children }) {
     else root.classList.remove("dark");
   }, [doc.present.theme, hydrated]);
 
-  // Reflect the current inputs into the URL (shareable link). Debounced and via
-  // replaceState so it doesn't flood browser history while dragging a slider.
+  // keep the inputs in the URL so it's shareable. debounced + replaceState so
+  // dragging a slider doesn't spam the back button.
   useEffect(() => {
     if (!hydrated) return;
     const { amount, rate, tenure, mode, theme } = doc.present;
@@ -166,7 +162,7 @@ export function SharedStateProvider({ children }) {
     doc.present.theme,
   ]);
 
-  // ---- Public setters (each commits → syncs) ----
+  // setters - each one commits and syncs
   const setField = useCallback(
     (key, value) => applyLocal(commit(docRef.current, { [key]: value })),
     [applyLocal]

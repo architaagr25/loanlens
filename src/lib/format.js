@@ -1,23 +1,23 @@
-// Display helpers: Indian-style currency grouping and tenure labels.
+// little formatting helpers - rupee grouping, month labels, etc.
 
-// Rounds to the nearest rupee. Centralized so every display rounds the same way.
+// one place for rounding so the whole app rounds the same way
 export function roundCurrency(n) {
   if (!Number.isFinite(n)) return 0;
   return Math.round(n);
 }
 
-// "₹15,00,000" — Indian digit grouping (lakh/crore), no decimals.
+// "₹15,00,000" - en-IN gives the lakh/crore grouping for free
 export function formatINR(n) {
   const value = roundCurrency(n);
   return "₹" + value.toLocaleString("en-IN");
 }
 
-// Plain Indian-grouped number without the ₹ symbol (for inputs/labels).
+// same grouping without the ₹
 export function formatNumber(n) {
   return roundCurrency(n).toLocaleString("en-IN");
 }
 
-// "4 yr", "3 yr 6 mo", "11 mo", "1 mo" — used for the sensitivity grid axis.
+// 48 -> "4 yr", 42 -> "3 yr 6 mo", 1 -> "1 mo"
 export function formatMonths(months) {
   const m = Math.max(0, Math.round(months));
   const years = Math.floor(m / 12);
@@ -27,7 +27,7 @@ export function formatMonths(months) {
   return `${years} yr ${rem} mo`;
 }
 
-// "11%" / "10.5%" — trims a trailing ".0" so whole rates read cleanly.
+// "11%" / "10.5%" - drop the trailing .0 on whole numbers
 export function formatPercent(rate) {
   const r = Math.round(rate * 10) / 10;
   return `${r % 1 === 0 ? r.toFixed(0) : r.toFixed(1)}%`;

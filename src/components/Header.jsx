@@ -4,8 +4,7 @@ import { usePresence } from "@/hooks/usePresence";
 import ThemeToggle from "./ThemeToggle";
 import UndoRedo from "./UndoRedo";
 
-// Top bar: product identity on the left; tab id + LEADER badge + live tab count
-// + theme toggle on the right (matches the design reference header).
+// top bar - logo on the left, tab id / LEADER badge / tab count / theme on the right
 export default function Header() {
   const { label, tabCount, isLeader } = usePresence();
 

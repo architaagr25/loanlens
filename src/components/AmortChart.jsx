@@ -13,10 +13,9 @@ import {
 } from "recharts";
 import { formatINR } from "@/lib/format";
 
-// Stacked bar chart: one bar per month, principal (indigo) + interest (amber).
-// Makes the interest-heavy-early → principal-heavy-late shift visible.
-// A reference line marks the break-even month (so it's visible here too, not
-// just in the table).
+// stacked bars, one per month - principal (indigo) on interest (amber). makes
+// the "mostly interest early, mostly principal late" shift obvious. the dashed
+// line marks break-even so it shows up here too, not just in the table.
 export default function AmortChart({ rows, theme, breakEvenMonth }) {
   const data = useMemo(
     () =>

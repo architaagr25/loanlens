@@ -5,9 +5,9 @@ import { useSharedState } from "@/hooks/useSharedState";
 import { sensitivityGrid } from "@/lib/emi";
 import { formatINR, formatMonths, formatPercent } from "@/lib/format";
 
-// Read-only rate × tenure grid of EMIs around the current selection. The center
-// cell (current inputs) is highlighted, as are the current rate column and
-// current tenure row. Memoized — recomputes only when inputs change (≤49 evals).
+// read-only grid of EMIs for nearby rate/tenure combos. the current cell is
+// highlighted (plus its row and column). memoized so it only recomputes when an
+// input actually changes - it's up to 49 EMI calls.
 export default function SensitivityGrid() {
   const { state } = useSharedState();
   const { amount, rate, tenure } = state;

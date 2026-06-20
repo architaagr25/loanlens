@@ -1,31 +1,24 @@
-// ──────────────────────────────────────────────────────────────────────────
-// EMI math core — pure functions, no React, no browser APIs.
-// Reducing-balance method: interest each month is charged on the OUTSTANDING
-// balance, not the original principal. All formulas follow the assignment.
-// ──────────────────────────────────────────────────────────────────────────
+// All the loan math lives here. Pure functions only - no React, no browser stuff,
+// so it's easy to test. Everything uses the reducing-balance method (interest on
+// the outstanding balance each month, not the original principal).
 
 import { RATE_OFFSETS, TENURE_OFFSETS, BOUNDS } from "./constants";
 
-// Tolerance for floating-point comparisons so a sub-paisa residue (e.g. 2e-8)
-// is treated as a closed loan rather than leaking into the final balance.
+// small tolerance so floating point dust (like 2e-8) doesn't leak into the
+// final balance and leave the loan looking unpaid
 const EPSILON = 1e-6;
 
-// Monthly interest rate (decimal) = annual rate ÷ 12 ÷ 100.
-// e.g. 11% p.a. → 11/12/100 = 0.0091666…
+// annual % -> monthly decimal rate. 11% -> 11/12/100 = 0.009166...
 export function monthlyRate(annualRatePct) {
   return annualRatePct / 12 / 100;
 }
 
-// Clamp a value into [min, max].
 export function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
-// Standard reducing-balance EMI:
-//        P · r · (1 + r)^n
-// EMI = ─────────────────────
-//          (1 + r)^n − 1
-// Edge cases: zero interest → straight-line P/n; guards against n ≤ 0.
+// the EMI formula: P*r*(1+r)^n / ((1+r)^n - 1)
+// handles 0% (just P/n, otherwise we'd divide by zero) and bad inputs
 export function calculateEMI(P, annualRatePct, n) {
   if (!Number.isFinite(P) || !Number.isFinite(annualRatePct) || !Number.isFinite(n)) {
     return 0;
@@ -33,17 +26,13 @@ export function calculateEMI(P, annualRatePct, n) {
   if (P <= 0 || n <= 0) return 0;
 
   const r = monthlyRate(annualRatePct);
-  if (r === 0) return P / n; // zero-interest loan: no compounding
+  if (r === 0) return P / n; // no interest, nothing to compound
 
   const pow = Math.pow(1 + r, n);
   return (P * r * pow) / (pow - 1);
 }
 
-// Headline summary for a loan. Once EMI is known, the rest follow directly.
-//   Total Amount Payable = EMI × n
-//   Total Interest       = (EMI × n) − P
-//   Principal share %    = P / (EMI × n) × 100
-//   Interest share %     = Total Interest / (EMI × n) × 100
+// everything else falls out of the EMI once we have it
 export function summarize(P, annualRatePct, n) {
   const emi = calculateEMI(P, annualRatePct, n);
   const totalPayable = emi * n;
@@ -53,7 +42,7 @@ export function summarize(P, annualRatePct, n) {
   return { emi, totalPayable, totalInterest, principalPct, interestPct };
 }
 
-// Sum all prepayments scheduled for a given month (multiple-same-month → summed).
+// add up every prepayment that lands on this month (two on the same month -> sum)
 function prepaymentForMonth(prepayments, month) {
   let sum = 0;
   for (const p of prepayments) {
@@ -64,18 +53,13 @@ function prepaymentForMonth(prepayments, month) {
   return sum;
 }
 
-// Build the month-by-month amortization schedule, carrying the balance forward.
-// Returns rows: { month, emi, principalPaid, interestPaid, prepayment, balance }.
-//
-// Reduce-tenure strategy for prepayments: EMI stays fixed; a prepayment is
-// applied to the balance at the START of its month (before interest), so the
-// loan reaches zero in fewer months.
-//
-// Edge cases:
-//   - prepayment larger than balance → capped (loan closes that month)
-//   - prepayment month beyond tenure → never reached, harmlessly ignored
-//   - multiple prepayments same month → summed
-//   - final month → principal/EMI trimmed so balance lands exactly on 0
+// Builds the full month-by-month schedule, carrying the balance forward.
+// Prepayments use the reduce-tenure approach: EMI stays the same, the extra cash
+// knocks down the balance at the start of its month (before interest), so the
+// loan just finishes earlier.
+// Edge cases handled here: prepayment bigger than balance gets capped, a month
+// past the tenure is never reached, and the last month is trimmed so we land
+// exactly on 0.
 export function buildSchedule(P, annualRatePct, n, prepayments = []) {
   const rows = [];
   if (P <= 0 || n <= 0) return rows;
@@ -84,17 +68,17 @@ export function buildSchedule(P, annualRatePct, n, prepayments = []) {
   const emi = calculateEMI(P, annualRatePct, n);
   let balance = P;
 
-  // Hard cap on iterations: never exceed the original tenure (reduce-tenure).
+  // never run past the original tenure
   for (let month = 1; month <= n && balance > 0; month++) {
-    // 1) Apply any prepayment first, before interest is charged this month.
+    // prepayment first, before this month's interest
     let prepayment = prepaymentForMonth(prepayments, month);
     if (prepayment > 0) {
-      prepayment = Math.min(prepayment, balance); // cap so balance never < 0
+      prepayment = Math.min(prepayment, balance); // don't go below 0
       balance -= prepayment;
     }
 
     if (balance <= 0) {
-      // Prepayment alone closed the loan this month.
+      // the prepayment alone cleared it
       rows.push({
         month,
         emi: 0,
@@ -106,13 +90,13 @@ export function buildSchedule(P, annualRatePct, n, prepayments = []) {
       break;
     }
 
-    // 2) Normal EMI split on the (possibly reduced) balance.
+    // normal split for the month
     const interestPaid = balance * r;
     let principalPaid = emi - interestPaid;
     let emiThisMonth = emi;
 
     if (principalPaid >= balance - EPSILON) {
-      // Final regular month: clear the balance exactly, trim the last EMI.
+      // last month - pay off exactly what's left and shrink the final EMI
       principalPaid = balance;
       emiThisMonth = principalPaid + interestPaid;
       balance = 0;
@@ -133,9 +117,9 @@ export function buildSchedule(P, annualRatePct, n, prepayments = []) {
   return rows;
 }
 
-// First month where cumulative principal repaid > cumulative interest paid.
-// Computed correctly (NOT a hard-coded "month 1"). Returns null if it never
-// happens (e.g. a loan closed very early). Prepayments count toward principal.
+// first month where total principal paid overtakes total interest paid.
+// actually computed (not hardcoded to month 1). null if it never happens.
+// prepayments count as principal.
 export function findBreakEvenMonth(rows) {
   let cumPrincipal = 0;
   let cumInterest = 0;
@@ -147,14 +131,12 @@ export function findBreakEvenMonth(rows) {
   return null;
 }
 
-// Total interest across a schedule.
 export function totalInterestOf(rows) {
   return rows.reduce((sum, row) => sum + row.interestPaid, 0);
 }
 
-// Prepayment impact vs the original (no-prepayment) plan.
-//   Interest Saved = Total Interest (no prepay) − Total Interest (with prepay)
-//   Tenure Reduced = Original tenure − Actual tenure after prepayment
+// compare the no-prepayment plan against the one with prepayments to get
+// how much interest/time was saved
 export function prepaymentImpact(P, annualRatePct, n, prepayments = []) {
   const base = buildSchedule(P, annualRatePct, n, []);
   const adjusted = buildSchedule(P, annualRatePct, n, prepayments);
@@ -162,7 +144,7 @@ export function prepaymentImpact(P, annualRatePct, n, prepayments = []) {
   const originalTotalInterest = totalInterestOf(base);
   const newTotalInterest = totalInterestOf(adjusted);
 
-  const originalTenure = base.length; // may be < n only in degenerate cases
+  const originalTenure = base.length;
   const newTenure = adjusted.length;
 
   return {
@@ -175,21 +157,18 @@ export function prepaymentImpact(P, annualRatePct, n, prepayments = []) {
   };
 }
 
-// Build a de-duplicated, clamped axis from a base value + offsets.
+// turn a base value + offsets into a sorted, clamped, de-duped axis.
+// near the edges some offsets collapse onto the same value, hence the dedupe.
 function buildAxis(base, offsets, min, max) {
   const values = offsets.map((o) => clamp(base + o, min, max));
-  // De-duplicate while preserving order, then sort ascending.
   const unique = Array.from(new Set(values));
   unique.sort((a, b) => a - b);
   return unique;
 }
 
-// What-If sensitivity grid: EMI for every (tenure × rate) combination around
-// the current selection. Principal is held constant.
-//   rows    = tenures (current ± 6/12/24, clamped 1–84, de-duped)
-//   columns = rates   (current ± 1/2/3,   clamped 1–36, de-duped)
-//   cell    = calculateEMI(P, thatRate, thatTenure)
-// centerRow/centerCol point at the current inputs (the headline EMI).
+// the what-if grid: EMI for each rate x tenure combo around the current pick,
+// keeping the principal fixed. centerRow/centerCol point back at the current
+// inputs so the UI can highlight that cell.
 export function sensitivityGrid(P, currentRate, currentTenure) {
   const rates = buildAxis(currentRate, RATE_OFFSETS, BOUNDS.rate.min, BOUNDS.rate.max);
   const tenures = buildAxis(
@@ -201,7 +180,6 @@ export function sensitivityGrid(P, currentRate, currentTenure) {
 
   const cells = tenures.map((t) => rates.map((rate) => calculateEMI(P, rate, t)));
 
-  // Find the cell matching the current inputs (after clamping).
   const clampedRate = clamp(currentRate, BOUNDS.rate.min, BOUNDS.rate.max);
   const clampedTenure = clamp(currentTenure, BOUNDS.tenure.min, BOUNDS.tenure.max);
   const centerCol = rates.indexOf(clampedRate);
@@ -210,8 +188,7 @@ export function sensitivityGrid(P, currentRate, currentTenure) {
   return { rates, tenures, cells, centerRow, centerCol };
 }
 
-// Compare mode: index of the scenario with the lowest Total Amount Payable.
-// Each scenario: { amount, rate, tenure }. Returns -1 for an empty list.
+// which scenario is cheapest overall (lowest total payable). -1 if list is empty.
 export function lowestCostScenarioIndex(scenarios) {
   let bestIdx = -1;
   let bestTotal = Infinity;

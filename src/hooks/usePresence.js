@@ -1,22 +1,18 @@
 "use client";
 
-// ──────────────────────────────────────────────────────────────────────────
-// usePresence — tab identity, live tab count, and leader election.
+// tab identity + live count + which tab is "leader".
 //
 // There is no server to keep a list of open tabs, so we use the classic
 // heartbeat + presence-map approach over a BroadcastChannel:
+//  - on mount each tab picks a random id and remembers when it was born
+//  - it pings { id, born } every couple seconds
+//  - everyone keeps a map of the others and drops anyone who's gone quiet
+//    (handles a tab that crashed and couldn't say goodbye)
+//  - on close it sends BYE so the count drops right away
 //
-//   - Each tab has a unique id + a `born` timestamp (set once on mount).
-//   - Every HEARTBEAT_INTERVAL it broadcasts a PING { id, born }.
-//   - Each tab keeps a map of peers { id -> { born, lastSeen } } and prunes
-//     any peer not heard from within STALE_MS (covers crashes / hard closes).
-//   - On close it broadcasts BYE for instant removal in the other tabs.
-//   - Leader = the longest-lived tab (smallest `born`, id as tiebreaker). When
-//     the leader disappears, the next-oldest tab automatically becomes leader —
-//     no election messages needed, every tab computes it from the same map.
-//
-// Friendly labels ("Tab 01", "Tab 02") are derived from each tab's rank by age.
-// ──────────────────────────────────────────────────────────────────────────
+// leader = the oldest tab (smallest born). nobody "elects" it - every tab works
+// it out from the same map, so when the leader closes the next-oldest just
+// becomes leader on its own. labels like "Tab 01" come from age order.
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -34,10 +30,10 @@ function makeId() {
 }
 
 export function usePresence() {
-  const [self, setSelf] = useState(null); // { id, born } — set on mount
-  const [peers, setPeers] = useState({}); // other tabs: id -> { born, lastSeen }
+  const [self, setSelf] = useState(null); // { id, born }, set on mount
+  const [peers, setPeers] = useState({}); // the other tabs: id -> { born, lastSeen }
 
-  const peersRef = useRef(peers); // latest peers, readable in handlers
+  const peersRef = useRef(peers); // latest peers so the message handler isn't stale
   const channelRef = useRef(null);
 
   useEffect(() => {
@@ -50,7 +46,7 @@ export function usePresence() {
     const channel = new BroadcastChannel(PRESENCE_CHANNEL);
     channelRef.current = channel;
 
-    // Update both the ref (for handlers) and state (for render) together.
+    // update the ref (for the handler) and state (for render) at the same time
     const updatePeers = (updater) => {
       peersRef.current = updater(peersRef.current);
       setPeers(peersRef.current);
@@ -67,8 +63,8 @@ export function usePresence() {
           ...prev,
           [msg.id]: { born: msg.born, lastSeen: Date.now() },
         }));
-        // A tab we've never seen just announced itself — reply at once so it
-        // learns about us immediately instead of waiting a heartbeat.
+        // new tab we haven't seen - ping back right away so it finds out about
+        // us now instead of waiting for the next heartbeat
         if (isNewcomer) ping();
       } else if (msg.type === "BYE") {
         updatePeers((prev) => {
@@ -80,10 +76,10 @@ export function usePresence() {
       }
     };
 
-    ping(); // announce ourselves immediately
+    ping(); // say hi straight away
     const beat = setInterval(ping, HEARTBEAT_INTERVAL);
 
-    // Sweep out tabs we haven't heard from recently (covers crashes).
+    // drop tabs we haven't heard from in a while (the crash case)
     const prune = setInterval(() => {
       const now = Date.now();
       updatePeers((prev) => {
@@ -97,12 +93,12 @@ export function usePresence() {
       });
     }, PRUNE_INTERVAL);
 
-    // Tell the others we're leaving (instant count update for graceful closes).
+    // let the others know we're closing so their count updates instantly
     const sayBye = () => {
       try {
         channel.postMessage({ type: "BYE", id });
       } catch {
-        /* channel may already be closing */
+        // channel might already be closing, no big deal
       }
     };
     window.addEventListener("beforeunload", sayBye);
@@ -119,7 +115,7 @@ export function usePresence() {
     };
   }, []);
 
-  // Derive identity/count/leader from self + peers (all tabs compute the same).
+  // work out id / count / leader from self + peers (same result in every tab)
   return useMemo(() => {
     if (!self) {
       return { tabId: null, label: "Tab 01", tabCount: 1, isLeader: true };
@@ -128,7 +124,7 @@ export function usePresence() {
       { id: self.id, born: self.born },
       ...Object.entries(peers).map(([id, v]) => ({ id, born: v.born })),
     ];
-    // Oldest first; id breaks ties so every tab agrees on the same order.
+    // oldest first, id as tiebreaker so everyone sorts the same way
     all.sort((a, b) => a.born - b.born || (a.id < b.id ? -1 : 1));
 
     const myIndex = all.findIndex((t) => t.id === self.id);

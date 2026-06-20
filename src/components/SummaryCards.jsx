@@ -2,8 +2,7 @@
 
 import { formatINR } from "@/lib/format";
 
-// The three headline outputs. The EMI card is accented (it's the primary
-// number), matching the design reference.
+// the three headline numbers. EMI is the main one so it gets the accent.
 export default function SummaryCards({ emi, totalInterest, totalPayable }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">

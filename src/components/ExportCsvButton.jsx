@@ -2,8 +2,7 @@
 
 import { scheduleToCsv } from "@/lib/csv";
 
-// Downloads the given schedule rows as a CSV file. Builds a Blob and clicks a
-// temporary link — no backend involved.
+// downloads the rows as a CSV - build a Blob, click a throwaway link. no backend.
 export default function ExportCsvButton({ rows, filename = "amortization.csv" }) {
   const download = () => {
     const csv = scheduleToCsv(rows);

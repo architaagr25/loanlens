@@ -5,8 +5,8 @@ import { BOUNDS } from "@/lib/constants";
 import { formatINR, formatMonths } from "@/lib/format";
 import SliderInput from "./SliderInput";
 
-// The three loan inputs (single mode). Each writes to shared state, so edits
-// sync across tabs and feed every derived view.
+// the three loan inputs for single mode. they write straight to shared state,
+// so edits sync across tabs and feed everything downstream.
 export default function InputPanel() {
   const { state, setField } = useSharedState();
 

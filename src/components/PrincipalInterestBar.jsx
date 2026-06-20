@@ -2,8 +2,8 @@
 
 import { formatINR } from "@/lib/format";
 
-// The Interest-to-Principal ratio as a split bar: indigo = principal,
-// amber = interest, with percentage labels and a legend.
+// principal vs interest as a split bar (indigo = principal, amber = interest)
+// plus the percentages and a little legend underneath.
 export default function PrincipalInterestBar({
   principal,
   totalInterest,

@@ -12,9 +12,9 @@ function newId() {
   return "p-" + Math.random().toString(36).slice(2, 8);
 }
 
-// Schedule one-time lump-sum prepayments and see the impact. Prepayments are
-// synced state, so they appear in every tab. The math (cap at balance, ignore
-// months beyond tenure, sum same-month) lives in buildSchedule/prepaymentImpact.
+// add lump-sum prepayments and see what they save. the list is synced state so
+// it shows up in every tab. the tricky bits (cap at the balance, ignore months
+// past the tenure, sum same-month ones) are handled over in emi.js.
 export default function PrepaymentPlanner() {
   const { state, setPrepayments } = useSharedState();
   const { amount, rate, tenure, prepayments } = state;

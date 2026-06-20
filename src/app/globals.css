@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  /* Light theme tokens */
+  /* light theme colors */
   --bg: #eef1f5;
   --surface: #ffffff;
   --surface-muted: #f7f8fa;
@@ -13,7 +13,7 @@
 }
 
 .dark {
-  /* Dark theme tokens (matches the dark-mode screenshots) */
+  /* dark theme colors */
   --bg: #0a0c10;
   --surface: #14171d;
   --surface-muted: #1b1f27;
@@ -35,7 +35,7 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Reusable surface helpers driven by the theme tokens above */
+/* shared card/surface helpers that read the theme vars above */
 @layer components {
   .card {
     background-color: var(--surface);
@@ -58,7 +58,7 @@ body {
   }
 }
 
-/* Range slider styling (consistent across browsers) */
+/* style the range slider so it looks the same in every browser */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
@@ -90,7 +90,7 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 }
 
-/* Remove number input spinners for a cleaner product look */
+/* kill the number input spinners */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;

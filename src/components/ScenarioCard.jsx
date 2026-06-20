@@ -4,8 +4,8 @@ import { BOUNDS } from "@/lib/constants";
 import { formatINR, formatMonths } from "@/lib/format";
 import SliderInput from "./SliderInput";
 
-// One comparison scenario: editable name + Amount/Rate/Tenure inputs and the
-// computed results. The lowest-total-cost card is highlighted as "BEST VALUE".
+// a single compare card - editable name, its own amount/rate/tenure, and the
+// results. the cheapest one gets the green "BEST VALUE" tag.
 export default function ScenarioCard({
   scenario,
   summary,

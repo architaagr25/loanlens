@@ -3,10 +3,10 @@
 import { useEffect } from "react";
 import { useSharedState } from "@/hooks/useSharedState";
 
-// Undo/redo controls + global keyboard shortcuts. The history lives in the
-// synced document (Phase 2), so undo/redo applies across ALL tabs at once.
-//   Ctrl/Cmd+Z         → undo
-//   Ctrl/Cmd+Shift+Z   → redo   (also Ctrl+Y)
+// undo/redo buttons + keyboard shortcuts. history is part of the synced doc, so
+// hitting undo rolls back every tab at once.
+//   Ctrl/Cmd+Z        -> undo
+//   Ctrl/Cmd+Shift+Z  -> redo  (Ctrl+Y too)
 export default function UndoRedo() {
   const { undo, redo, canUndo, canRedo } = useSharedState();
 
@@ -15,7 +15,7 @@ export default function UndoRedo() {
       const meta = e.ctrlKey || e.metaKey;
       if (!meta) return;
 
-      // Don't hijack native text undo while typing in an input/textarea.
+      // leave normal text undo alone when you're typing in a field
       const tag = e.target?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
 

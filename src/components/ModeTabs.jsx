@@ -8,14 +8,12 @@ const MODES = [
   { key: "prepayment", label: "Prepayment" },
 ];
 
-// Single | Compare | Prepayment switcher. The active mode is synced, so all
-// tabs follow when one switches.
+// the Single | Compare | Prepayment switch. mode is synced so all tabs follow.
 export default function ModeTabs() {
   const { state, setMode, patch } = useSharedState();
 
-  // Switching from Compare back to Single seeds the single calculator with the
-  // last active scenario's values (Feature 3 requirement). Other switches just
-  // change the mode.
+  // going Compare -> Single carries over the last scenario you touched into the
+  // single calculator. every other switch just changes the mode.
   const switchTo = (key) => {
     if (
       key === "single" &&

@@ -1,16 +1,16 @@
-// Pure CSV builder for the amortization schedule (no DOM here, so it's testable).
+// build the CSV string for the schedule. no DOM here so it's testable - the
+// actual download lives in the button component.
 
 import { roundCurrency } from "./format";
 
-// Escape a CSV field if it contains a comma, quote, or newline.
+// quote a field if it has a comma/quote/newline in it
 function escapeCsv(value) {
   const s = String(value);
   if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
   return s;
 }
 
-// Turn schedule rows into a CSV string with a header row.
-// Columns mirror the on-screen table.
+// rows -> CSV string, columns match the table on screen
 export function scheduleToCsv(rows) {
   const header = [
     "Month",

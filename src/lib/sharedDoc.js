@@ -1,22 +1,19 @@
-// ──────────────────────────────────────────────────────────────────────────
-// Shared document model — the synced "workspace" as a pure, testable object.
+// The shared workspace as a plain object so it's easy to test and easy to sync.
 //
-// Shape:  { present, past[], future[], rev }
-//   present : the current field values every tab reads/renders
-//   past    : prior presents (for undo), bounded to MAX_HISTORY
-//   future  : undone presents (for redo)
-//   rev     : monotonically increasing revision; used to resolve cross-tab races
-//             (a tab ignores any incoming doc whose rev is not newer)
+//   { present, past[], future[], rev }
+//   present -> what every tab shows right now
+//   past    -> undo stack (capped at MAX_HISTORY)
+//   future  -> redo stack
+//   rev     -> goes up on every change; lets a tab ignore older incoming docs
 //
-// Keeping this pure (no React, no browser) means undo/redo is unit-testable and
-// the same document syncs verbatim across tabs — so cross-tab undo is automatic.
-// ──────────────────────────────────────────────────────────────────────────
+// Since the whole thing (history included) is what syncs across tabs, undo just
+// works across tabs for free.
 
 import { DEFAULT_STATE } from "./constants";
 
 export const MAX_HISTORY = 50;
 
-// The fields that make up the synced "present" (no history bookkeeping here).
+// pull out just the fields we sync (leave the history bookkeeping out)
 function pickPresent(state) {
   const {
     amount,
@@ -40,7 +37,6 @@ function pickPresent(state) {
   };
 }
 
-// Build a fresh document from a present (defaults if none provided).
 export function createDoc(present = DEFAULT_STATE) {
   return {
     present: pickPresent(present),
@@ -50,17 +46,16 @@ export function createDoc(present = DEFAULT_STATE) {
   };
 }
 
-// Commit a new present: push the old present onto `past`, clear `future`
-// (a fresh edit invalidates the redo stack), bump the revision.
-// `patch` is a partial set of fields merged into the current present.
+// apply a partial change. push the old present onto the undo stack, wipe redo
+// (a new edit kills the redo path), bump rev. no-op if nothing changed so we
+// don't spam the history.
 export function commit(doc, patch) {
   const nextPresent = { ...doc.present, ...patch };
 
-  // No-op if nothing actually changed (avoids polluting history).
   if (shallowEqual(nextPresent, doc.present)) return doc;
 
   const past = [...doc.past, doc.present];
-  if (past.length > MAX_HISTORY) past.shift(); // bound the history
+  if (past.length > MAX_HISTORY) past.shift();
 
   return {
     present: nextPresent,
@@ -70,7 +65,7 @@ export function commit(doc, patch) {
   };
 }
 
-// Move one step back in history. Returns the same doc if nothing to undo.
+// step back. returns the same doc if there's nothing to undo.
 export function undo(doc) {
   if (doc.past.length === 0) return doc;
   const previous = doc.past[doc.past.length - 1];
@@ -82,7 +77,7 @@ export function undo(doc) {
   };
 }
 
-// Move one step forward in history. Returns the same doc if nothing to redo.
+// step forward.
 export function redo(doc) {
   if (doc.future.length === 0) return doc;
   const next = doc.future[0];
@@ -102,8 +97,8 @@ export function canRedo(doc) {
   return doc.future.length > 0;
 }
 
-// Shallow equality over the present's top-level fields (arrays compared by
-// reference — setters always pass new arrays when contents change).
+// shallow compare - arrays are compared by reference since setters always hand
+// us new arrays when something actually changes
 function shallowEqual(a, b) {
   const ak = Object.keys(a);
   const bk = Object.keys(b);

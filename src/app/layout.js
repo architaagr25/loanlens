@@ -7,8 +7,8 @@ export const metadata = {
     "Loan EMI calculator with a real-time shared workspace synced across browser tabs.",
 };
 
-// Applied before paint to avoid a flash of the wrong theme and any hydration
-// mismatch: read the persisted theme synchronously and set the <html> class.
+// runs before the page paints - reads the saved theme and sets the dark class
+// right away so there's no flash of the wrong theme (and no hydration warning)
 const themeBootstrap = `
 (function () {
   try {

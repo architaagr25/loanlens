@@ -10,8 +10,9 @@ import {
   lowestCostScenarioIndex,
 } from "./emi";
 
-// All expected numbers below are taken directly from the assignment's worked
-// examples. Tolerances account for the PDF rounding its intermediate steps.
+// the expected numbers here come straight from the worked examples in the doc.
+// the loose tolerances are because the PDF rounds its intermediate steps and we
+// don't, so we're off by a few rupees (which is fine, we're more accurate).
 
 describe("monthlyRate", () => {
   it("converts 11% p.a. to ~0.009167 monthly", () => {
@@ -77,16 +78,15 @@ describe("buildSchedule — base loan, no prepayment", () => {
 
 describe("findBreakEvenMonth", () => {
   it("base loan breaks even at month 1 (principal portion already > interest)", () => {
-    // Confirms the screenshot's "month 1" is correct, not a placeholder:
-    // month 1 principal ₹25,018 already exceeds interest ₹13,750.
+    // the screenshot's "month 1" is actually right, not a placeholder -
+    // month 1 principal (25,018) already beats the interest (13,750)
     const rows = buildSchedule(1500000, 11, 48);
     expect(findBreakEvenMonth(rows)).toBe(1);
   });
 
   it("computes a LATER break-even for an interest-heavy loan", () => {
-    // 18% / 60mo: month 1 is interest-heavy (principal ₹15,592 < interest
-    // ₹22,500), so cumulative principal overtakes interest only mid-term —
-    // but it still does, since total interest < principal here.
+    // 18% / 60mo: early months are interest-heavy (month 1 principal 15,592 <
+    // interest 22,500), so principal only overtakes interest partway through
     const rows = buildSchedule(1500000, 18, 60);
     const be = findBreakEvenMonth(rows);
     expect(be).toBeGreaterThan(1);
@@ -166,7 +166,7 @@ describe("sensitivityGrid", () => {
 
   it("clamps and de-duplicates near the edges (tenure = 3)", () => {
     const edge = sensitivityGrid(1500000, 11, 3);
-    // -6/-12/-24 all clamp to 1, so they collapse to a single low row.
+    // at tenure 3 the -6/-12/-24 offsets all clamp to 1 and collapse into one row
     expect(new Set(edge.tenures).size).toBe(edge.tenures.length);
     expect(Math.min(...edge.tenures)).toBe(1);
     expect(edge.tenures).toContain(3); // current tenure present

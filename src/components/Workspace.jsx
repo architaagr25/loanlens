@@ -13,8 +13,8 @@ import SensitivityGrid from "./SensitivityGrid";
 import CompareMode from "./CompareMode";
 import PrepaymentPlanner from "./PrepaymentPlanner";
 
-// Top-level layout. Reads the synced inputs, derives the summary (memoized so
-// it only recomputes when inputs change), and renders the active mode.
+// top-level layout. reads the synced inputs, works out the summary (memoized so
+// it only recalcs when inputs change), and shows whichever mode is active.
 export default function Workspace() {
   const { state } = useSharedState();
   const { amount, rate, tenure, mode } = state;

@@ -1,10 +1,10 @@
-// Encode/decode calculator inputs to/from the URL query string, so a specific
-// scenario can be shared via link. Pure functions — no window access here.
+// read/write the calculator inputs from the URL query string so a scenario can
+// be shared as a link. pure - no window access in here.
 
 import { BOUNDS } from "./constants";
 import { clamp } from "./emi";
 
-// Short keys keep the URL compact: a=amount, r=rate, t=tenure, m=mode, th=theme.
+// short keys to keep the link tidy: a=amount, r=rate, t=tenure, m=mode, th=theme
 export function encodeInputs({ amount, rate, tenure, mode, theme }) {
   const params = new URLSearchParams();
   params.set("a", String(amount));
@@ -15,13 +15,13 @@ export function encodeInputs({ amount, rate, tenure, mode, theme }) {
   return params.toString();
 }
 
-// Parse a query string into a partial, validated inputs object. Unknown/invalid
-// values are dropped so a malformed link can't corrupt state.
+// parse the query string back into inputs. anything missing or junk is dropped
+// and the rest is clamped, so a hand-edited link can't break the app.
 export function decodeInputs(search) {
   const params = new URLSearchParams(search);
   const out = {};
 
-  // Parse a numeric param, skipping missing/empty values (Number("") === 0).
+  // grab a number, skipping empty values - Number("") is 0 which we don't want
   const num = (key) => {
     const raw = params.get(key);
     if (raw === null || raw.trim() === "") return null;

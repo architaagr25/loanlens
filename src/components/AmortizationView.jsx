@@ -9,10 +9,10 @@ import ExportCsvButton from "./ExportCsvButton";
 
 const ROWS_PER_PAGE = 12;
 
-// Wraps the amortization schedule: derives rows + break-even (memoized),
-// paginates the table (12/page), and toggles between table and chart views.
-// `title`/`subtitle` let it serve both the single-mode and prepayment-mode
-// schedules. `usePrepayments` decides whether to fold in scheduled prepayments.
+// the schedule section: builds the rows + break-even (memoized), paginates the
+// table 12 at a time, and flips between table and chart. title/subtitle and the
+// usePrepayments flag let the same component cover both single mode and the
+// prepayment-adjusted version.
 export default function AmortizationView({
   title = "Amortization Schedule",
   subtitle = "Month-by-month principal & interest breakdown",
@@ -29,12 +29,12 @@ export default function AmortizationView({
 
   const breakEvenMonth = useMemo(() => findBreakEvenMonth(rows), [rows]);
 
-  const [view, setView] = useState("table"); // local UI: 'table' | 'chart'
+  const [view, setView] = useState("table"); // table or chart - just this tab, not synced
   const [page, setPage] = useState(0);
 
   const pageCount = Math.max(1, Math.ceil(rows.length / ROWS_PER_PAGE));
 
-  // Keep the page in range when the schedule shrinks (e.g. tenure reduced).
+  // if the schedule gets shorter (e.g. tenure dropped), snap back into range
   useEffect(() => {
     if (page > pageCount - 1) setPage(pageCount - 1);
   }, [page, pageCount]);
