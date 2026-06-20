@@ -59,48 +59,52 @@ export default function PrepaymentPlanner() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Left: add + list */}
-        <div className="card-muted p-4 space-y-4">
-          <p className="text-sm font-medium">Add a one-time prepayment</p>
-          <div className="flex flex-wrap items-end gap-3">
-            <Field label="Month">
-              <input
-                type="number"
-                min={1}
-                max={tenure}
-                value={month}
-                onChange={(e) => setMonth(e.target.value)}
-                className="card px-3 py-2 rounded-lg w-24 outline-none"
-              />
-            </Field>
-            <Field label="Amount (₹)">
-              <input
-                type="number"
-                min={1}
-                value={amt}
-                onChange={(e) => setAmt(e.target.value)}
-                className="card px-3 py-2 rounded-lg w-40 outline-none"
-              />
-            </Field>
-            <button
-              onClick={add}
-              disabled={!valid}
-              className="px-4 py-2 rounded-lg bg-brand-600 text-white text-sm font-medium disabled:opacity-40"
-            >
-              Add
-            </button>
+        {/* Left: add form + list, as two separate boxes */}
+        <div className="space-y-4">
+          <div className="card-muted p-4 space-y-4">
+            <p className="text-sm font-medium">Add a one-time prepayment</p>
+            <div className="flex items-end gap-3">
+              <Field label="Month" className="flex-1">
+                <input
+                  type="number"
+                  min={1}
+                  max={tenure}
+                  value={month}
+                  onChange={(e) => setMonth(e.target.value)}
+                  className="card px-3 py-2 rounded-lg w-full outline-none"
+                />
+              </Field>
+              <Field label="Amount (₹)" className="flex-1">
+                <input
+                  type="number"
+                  min={1}
+                  value={amt}
+                  onChange={(e) => setAmt(e.target.value)}
+                  className="card px-3 py-2 rounded-lg w-full outline-none"
+                />
+              </Field>
+              <button
+                onClick={add}
+                disabled={!valid}
+                className="px-4 py-2 rounded-lg bg-brand-600 text-white text-sm font-medium disabled:opacity-40 shrink-0"
+              >
+                Add
+              </button>
+            </div>
+            {!valid && (month !== "" || amt !== "") && (
+              <p className="text-xs text-amber-600">
+                Month must be 1–{tenure} and amount greater than 0.
+              </p>
+            )}
           </div>
-          {!valid && (month !== "" || amt !== "") && (
-            <p className="text-xs text-amber-600">
-              Month must be 1–{tenure} and amount greater than 0.
-            </p>
-          )}
 
           <div className="space-y-2">
             {sorted.length === 0 ? (
-              <p className="text-muted text-sm py-2">
-                No prepayments yet. Add one above to see the impact.
-              </p>
+              <div className="rounded-lg border border-dashed divider py-6 px-4 text-center">
+                <p className="text-muted text-sm">
+                  No prepayments yet. Add one above to see the impact.
+                </p>
+              </div>
             ) : (
               sorted.map((p) => (
                 <div
@@ -125,19 +129,19 @@ export default function PrepaymentPlanner() {
         </div>
 
         {/* Right: impact */}
-        <div className="card-muted p-4 space-y-4">
+        <div className="p-4 space-y-4 rounded-xl border border-[#e0ebe5] bg-[#f4f9f7] dark:border-emerald-500/20 dark:bg-emerald-500/10">
           <p className="text-sm font-medium uppercase tracking-wide text-muted">
             Prepayment Impact
           </p>
 
           <div className="flex items-center justify-between">
-            <span className="text-sm">Interest Saved</span>
+            <span className="text-sm text-muted">Interest Saved</span>
             <span className="text-xl font-bold text-emerald-600">
               {formatINR(impact.interestSaved)}
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm">Tenure Reduced By</span>
+            <span className="text-sm text-muted">Tenure Reduced By</span>
             <span className="text-xl font-bold">
               {impact.tenureReduced > 0
                 ? formatMonths(impact.tenureReduced)
@@ -168,9 +172,9 @@ export default function PrepaymentPlanner() {
   );
 }
 
-function Field({ label, children }) {
+function Field({ label, children, className = "" }) {
   return (
-    <label className="space-y-1">
+    <label className={"space-y-1 " + className}>
       <span className="block text-xs text-muted">{label}</span>
       {children}
     </label>
