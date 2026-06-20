@@ -21,7 +21,7 @@ export default function ExportCsvButton({ rows, filename = "amortization.csv" })
     <button
       onClick={download}
       disabled={!rows || rows.length === 0}
-      className="px-3 py-1.5 rounded-lg card text-sm font-medium hover:opacity-80 transition disabled:opacity-40 flex items-center gap-1.5"
+      className="px-3 py-1.5 rounded-lg card-muted text-sm font-medium hover:opacity-80 transition disabled:opacity-40 flex items-center gap-1.5"
     >
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />

@@ -13,7 +13,7 @@ export default function PrincipalInterestBar({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between text-sm">
-        <span className="font-medium">Principal vs Interest</span>
+        <span className="text-muted">Principal vs Interest</span>
         <span className="text-muted">
           {principalPct.toFixed(1)}% / {interestPct.toFixed(1)}%
         </span>

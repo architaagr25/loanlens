@@ -44,21 +44,13 @@ export default function AmortizationView({
 
   return (
     <section className="card p-5 space-y-4">
-      <div className="flex flex-wrap items-start justify-between gap-3 border-b divider pb-4 -mx-5 px-5">
-        <div>
-          <h2 className="font-semibold">{title}</h2>
-          <p className="text-muted text-xs">{subtitle}</p>
-        </div>
+      <div className="border-b divider pb-3 -mx-5 px-5">
+        <h2 className="font-semibold">{title}</h2>
+        <p className="text-muted text-xs">{subtitle}</p>
+      </div>
 
-        <div className="flex items-center gap-3">
-          {breakEvenMonth && (
-            <span className="text-xs text-muted">
-              Break-even at{" "}
-              <span className="text-brand-600 font-semibold">
-                month {breakEvenMonth}
-              </span>
-            </span>
-          )}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <div className="card-muted p-1 inline-flex gap-1 rounded-lg">
             <ToggleBtn active={view === "table"} onClick={() => setView("table")}>
               Table
@@ -67,8 +59,16 @@ export default function AmortizationView({
               Chart
             </ToggleBtn>
           </div>
-          <ExportCsvButton rows={rows} />
+          {breakEvenMonth && (
+            <span className="text-xs text-muted">
+              Break-even at{" "}
+              <span className="text-blue-600 font-semibold">
+                month {breakEvenMonth}
+              </span>
+            </span>
+          )}
         </div>
+        <ExportCsvButton rows={rows} />
       </div>
 
       {rows.length === 0 ? (
@@ -112,7 +112,9 @@ function ToggleBtn({ active, onClick, children }) {
       onClick={onClick}
       className={
         "px-3 py-1.5 rounded-md text-sm font-medium transition " +
-        (active ? "bg-brand-600 text-white" : "text-muted hover:opacity-80")
+        (active
+          ? "bg-[var(--surface)] shadow-sm text-[var(--text)]"
+          : "text-muted hover:opacity-80")
       }
     >
       {children}
