@@ -1,5 +1,7 @@
 # LoanLens — EMI Calculator with Shared Workspace
 
+**Live demo:** https://loanlens-ruddy.vercel.app
+
 A loan EMI calculator where every open browser tab shares the same state in real time. Change the loan amount in one tab and every other tab updates instantly — no server, no polling, no page refresh. It's the kind of pattern collaborative financial tools use, built here with just the browser.
 
 Open it in two tabs and drag a slider. The other tab follows along.
