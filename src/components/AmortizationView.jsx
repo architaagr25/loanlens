@@ -100,7 +100,7 @@ export default function AmortizationView({
           </div>
         </>
       ) : (
-        <AmortChart rows={rows} theme={theme} />
+        <AmortChart rows={rows} theme={theme} breakEvenMonth={breakEvenMonth} />
       )}
     </section>
   );

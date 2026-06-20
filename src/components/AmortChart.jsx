@@ -9,12 +9,15 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  ReferenceLine,
 } from "recharts";
 import { formatINR } from "@/lib/format";
 
 // Stacked bar chart: one bar per month, principal (indigo) + interest (amber).
 // Makes the interest-heavy-early → principal-heavy-late shift visible.
-export default function AmortChart({ rows, theme }) {
+// A reference line marks the break-even month (so it's visible here too, not
+// just in the table).
+export default function AmortChart({ rows, theme, breakEvenMonth }) {
   const data = useMemo(
     () =>
       rows.map((r) => ({
@@ -28,19 +31,34 @@ export default function AmortChart({ rows, theme }) {
   const axisColor = theme === "dark" ? "#9aa1ad" : "#6b7280";
 
   return (
-    <div className="h-[320px] w-full">
+    <div className="h-[360px] w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
+        <BarChart data={data} margin={{ top: 28, right: 12, left: 12, bottom: 28 }}>
           <XAxis
             dataKey="month"
             tick={{ fontSize: 11, fill: axisColor }}
             interval="preserveStartEnd"
             minTickGap={16}
+            label={{
+              value: "Month",
+              position: "insideBottom",
+              offset: -6,
+              fontSize: 12,
+              fill: axisColor,
+            }}
           />
           <YAxis
             tick={{ fontSize: 11, fill: axisColor }}
-            width={70}
+            width={78}
             tickFormatter={(v) => "₹" + (v / 1000).toFixed(0) + "k"}
+            label={{
+              value: "Amount (₹)",
+              angle: -90,
+              position: "insideLeft",
+              style: { textAnchor: "middle" },
+              fontSize: 12,
+              fill: axisColor,
+            }}
           />
           <Tooltip
             formatter={(value, name) => [formatINR(value), name]}
@@ -53,9 +71,27 @@ export default function AmortChart({ rows, theme }) {
               fontSize: 12,
             }}
           />
-          <Legend wrapperStyle={{ fontSize: 12 }} />
+          <Legend
+            verticalAlign="top"
+            align="center"
+            height={28}
+            wrapperStyle={{ fontSize: 12, color: axisColor }}
+          />
           <Bar dataKey="Principal" stackId="a" fill="#4f46e5" />
           <Bar dataKey="Interest" stackId="a" fill="#f5a623" />
+          {breakEvenMonth && (
+            <ReferenceLine
+              x={breakEvenMonth}
+              stroke="#10b981"
+              strokeDasharray="4 3"
+              label={{
+                value: "Break-even",
+                position: "top",
+                fontSize: 11,
+                fill: "#10b981",
+              }}
+            />
+          )}
         </BarChart>
       </ResponsiveContainer>
     </div>
