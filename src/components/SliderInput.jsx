@@ -17,6 +17,7 @@ export default function SliderInput({
   suffix,
   minLabel,
   maxLabel,
+  labelClassName = "text-sm font-medium",
 }) {
   const [text, setText] = useState(String(value));
   const focused = useRef(false);
@@ -50,7 +51,7 @@ export default function SliderInput({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between gap-3">
-        <label className="text-sm font-medium">{label}</label>
+        <label className={labelClassName}>{label}</label>
         <div className="card-muted flex items-center rounded-lg px-2.5 py-1.5 min-w-[120px] justify-end gap-1">
           {prefix && <span className="text-muted text-sm">{prefix}</span>}
           <input

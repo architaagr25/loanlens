@@ -57,18 +57,19 @@ export default function CompareMode() {
 
   return (
     <section className="card p-5 space-y-4">
-      <div className="flex flex-wrap items-start justify-between gap-3 border-b divider pb-4 -mx-5 px-5">
-        <div>
-          <h2 className="font-semibold">Compare Scenarios</h2>
-          <p className="text-muted text-xs">
-            Configure up to {MAX_SCENARIOS} scenarios — the lowest total cost is
-            highlighted.
-          </p>
-        </div>
+      <div className="border-b divider pb-3 -mx-5 px-5">
+        <h2 className="font-semibold">Compare Scenarios</h2>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-muted text-xs">
+          Configure up to {MAX_SCENARIOS} scenarios — the lowest total cost is
+          highlighted.
+        </p>
         <button
           onClick={addScenario}
           disabled={scenarios.length >= MAX_SCENARIOS}
-          className="px-3 py-2 rounded-lg bg-brand-600 text-white text-sm font-medium disabled:opacity-40"
+          className="px-3 py-2 rounded-lg card-muted text-sm font-medium hover:opacity-80 transition disabled:opacity-40"
         >
           + Add Scenario
         </button>

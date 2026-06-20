@@ -49,6 +49,7 @@ export default function ScenarioCard({
 
       <SliderInput
         label="Amount"
+        labelClassName="text-xs text-muted font-medium"
         prefix="₹"
         value={scenario.amount}
         min={BOUNDS.amount.min}
@@ -60,6 +61,7 @@ export default function ScenarioCard({
       />
       <SliderInput
         label="Rate"
+        labelClassName="text-xs text-muted font-medium"
         suffix="%"
         value={scenario.rate}
         min={BOUNDS.rate.min}
@@ -71,6 +73,7 @@ export default function ScenarioCard({
       />
       <SliderInput
         label="Tenure"
+        labelClassName="text-xs text-muted font-medium"
         suffix="mo"
         value={scenario.tenure}
         min={BOUNDS.tenure.min}
