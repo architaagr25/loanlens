@@ -59,7 +59,7 @@ export default function ModeTabs() {
   };
 
   return (
-    <div className="card p-1.5 inline-flex gap-1">
+    <div className="card p-1.5 flex w-full sm:w-auto sm:inline-flex gap-1">
       {MODES.map((m) => {
         const active = state.mode === m.key;
         return (
@@ -67,13 +67,13 @@ export default function ModeTabs() {
             key={m.key}
             onClick={() => switchTo(m.key)}
             className={
-              "px-4 py-2 rounded-lg text-sm font-medium transition inline-flex items-center gap-2 " +
+              "flex-1 sm:flex-none min-w-0 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition inline-flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2 whitespace-nowrap " +
               (active
                 ? "bg-brand-600 text-white"
                 : "hover:bg-black/5 dark:hover:bg-white/5 text-muted")
             }
           >
-            {ICONS[m.key]}
+            <span className="inline-flex">{ICONS[m.key]}</span>
             {m.label}
           </button>
         );

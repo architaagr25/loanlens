@@ -78,12 +78,12 @@ export default function AmortizationView({
       ) : view === "table" ? (
         <>
           <AmortTable rows={pageRows} breakEvenMonth={breakEvenMonth} />
-          <div className="flex items-center justify-between pt-1">
+          <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:items-center sm:justify-between">
             <span className="text-xs text-muted">
               Showing {start + 1}–{Math.min(start + ROWS_PER_PAGE, rows.length)}{" "}
               of {rows.length} months
             </span>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between sm:justify-end gap-2">
               <PageBtn disabled={page === 0} onClick={() => setPage((p) => p - 1)}>
                 ‹ Prev
               </PageBtn>
