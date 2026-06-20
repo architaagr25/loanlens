@@ -76,8 +76,8 @@ export default function AmortChart({ rows, theme, breakEvenMonth }) {
             height={28}
             wrapperStyle={{ fontSize: 12, color: axisColor }}
           />
-          <Bar dataKey="Principal" stackId="a" fill="#4f46e5" />
-          <Bar dataKey="Interest" stackId="a" fill="#f5a623" />
+          <Bar dataKey="Principal" stackId="a" fill="#4f46e5" isAnimationActive={false} />
+          <Bar dataKey="Interest" stackId="a" fill="#f5a623" isAnimationActive={false} />
           {breakEvenMonth && (
             <ReferenceLine
               x={breakEvenMonth}

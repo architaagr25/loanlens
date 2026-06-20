@@ -27,48 +27,48 @@ export default function Workspace() {
   return (
     <div className="min-h-screen">
       <Header />
-      <div className="p-4 sm:p-6 max-w-6xl mx-auto space-y-5">
+      <div className="px-3 sm:px-4 py-4 sm:py-6 max-w-7xl mx-auto space-y-5">
         <ModeTabs />
 
-      {mode === "single" && (
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,360px)_1fr] gap-5">
-          <InputPanel />
+        {mode === "single" && (
+          <div className="grid grid-cols-1 lg:grid-cols-[340px_minmax(0,1fr)] gap-5">
+            <InputPanel />
 
-          <div className="space-y-5">
-            <section className="card p-5 space-y-5">
-              <h2 className="font-semibold border-b divider pb-3 -mx-5 px-5">
-                Summary
-              </h2>
-              <SummaryCards
-                emi={summary.emi}
-                totalInterest={summary.totalInterest}
-                totalPayable={summary.totalPayable}
-              />
-              <PrincipalInterestBar
-                principal={amount}
-                totalInterest={summary.totalInterest}
-                principalPct={summary.principalPct}
-                interestPct={summary.interestPct}
-              />
-            </section>
+            <div className="space-y-5">
+              <section className="card p-5 space-y-5">
+                <h2 className="font-semibold border-b divider pb-3 -mx-5 px-5">
+                  Summary
+                </h2>
+                <SummaryCards
+                  emi={summary.emi}
+                  totalInterest={summary.totalInterest}
+                  totalPayable={summary.totalPayable}
+                />
+                <PrincipalInterestBar
+                  principal={amount}
+                  totalInterest={summary.totalInterest}
+                  principalPct={summary.principalPct}
+                  interestPct={summary.interestPct}
+                />
+              </section>
 
-            <SensitivityGrid />
+              <SensitivityGrid />
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {mode === "compare" && <CompareMode />}
+        {mode === "compare" && <CompareMode />}
 
-      {mode === "prepayment" && (
-        <>
-          <PrepaymentPlanner />
-          <AmortizationView
-            title="Adjusted Schedule"
-            subtitle="Amortization reflecting your prepayments"
-            usePrepayments
-          />
-        </>
-      )}
+        {mode === "prepayment" && (
+          <>
+            <PrepaymentPlanner />
+            <AmortizationView
+              title="Adjusted Schedule"
+              subtitle="Amortization reflecting your prepayments"
+              usePrepayments
+            />
+          </>
+        )}
 
         {/* Single mode shows the base (no-prepayment) schedule. */}
         {mode === "single" && <AmortizationView />}

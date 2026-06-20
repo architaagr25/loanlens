@@ -19,6 +19,7 @@ export default function InputPanel() {
 
       <SliderInput
         label="Loan Amount"
+        labelClassName="text-sm text-muted font-medium"
         prefix="₹"
         value={state.amount}
         min={BOUNDS.amount.min}
@@ -31,6 +32,7 @@ export default function InputPanel() {
 
       <SliderInput
         label="Interest Rate (p.a.)"
+        labelClassName="text-sm text-muted font-medium"
         suffix="%"
         value={state.rate}
         min={BOUNDS.rate.min}
@@ -43,6 +45,7 @@ export default function InputPanel() {
 
       <SliderInput
         label="Tenure"
+        labelClassName="text-sm text-muted font-medium"
         suffix="mo"
         value={state.tenure}
         min={BOUNDS.tenure.min}
