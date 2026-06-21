@@ -36,7 +36,10 @@ export default function Header() {
               </span>
             )}
           </span>
-          <span className="card-muted px-3 py-1 rounded-full text-sm flex items-center gap-1.5">
+          <span
+            key={tabCount}
+            className="card-muted px-3 py-1 rounded-full text-sm flex items-center gap-1.5 animate-badgepulse"
+          >
             <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
             {tabCount} {tabCount === 1 ? "tab" : "tabs"}
           </span>

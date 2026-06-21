@@ -95,6 +95,22 @@ body {
   animation: modeIn 0.25s ease-out;
 }
 
+/* quick pop when the tab count changes */
+@keyframes badgePulse {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.animate-badgepulse {
+  animation: badgePulse 0.4s ease-out;
+}
+
 /* style the range slider so it looks the same in every browser */
 input[type="range"] {
   -webkit-appearance: none;
