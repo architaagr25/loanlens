@@ -25,8 +25,10 @@ export default function AmortTable({ rows, breakEvenMonth }) {
               <tr
                 key={row.month}
                 className={
-                  "border-t divider " +
-                  (isBreakEven ? "bg-blue-50 dark:bg-blue-500/10" : "")
+                  "border-t divider transition-colors " +
+                  (isBreakEven
+                    ? "bg-blue-50 dark:bg-blue-500/10"
+                    : "hover:bg-black/[0.025] dark:hover:bg-white/[0.04]")
                 }
               >
                 <td className="px-4 py-2.5">

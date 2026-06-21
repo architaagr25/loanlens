@@ -17,7 +17,7 @@ export default function ScenarioCard({
   return (
     <div
       className={
-        "rounded-xl p-4 border space-y-4 relative " +
+        "rounded-xl p-4 border space-y-4 relative lift " +
         (isBest
           ? "border-emerald-500 bg-emerald-50/60 dark:bg-emerald-500/10"
           : "card")

@@ -21,12 +21,12 @@ export default function PrincipalInterestBar({
 
       <div className="flex h-3 rounded-full overflow-hidden card-muted">
         <div
-          className="bg-brand-600 h-full"
+          className="bg-brand-600 h-full transition-[width] duration-500 ease-out"
           style={{ width: `${principalPct}%` }}
           title={`Principal ${principalPct.toFixed(1)}%`}
         />
         <div
-          className="h-full"
+          className="h-full transition-[width] duration-500 ease-out"
           style={{ width: `${interestPct}%`, backgroundColor: "#f5a623" }}
           title={`Interest ${interestPct.toFixed(1)}%`}
         />
