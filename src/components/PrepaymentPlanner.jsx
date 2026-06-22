@@ -28,13 +28,17 @@ export default function PrepaymentPlanner() {
     [amount, rate, tenure, prepayments]
   );
 
+  // the loan may already be shorter than the original tenure once prepayments
+  // are in, so validate against the current (adjusted) length, not the original
+  const maxMonth = impact.newTenure;
+
   // only let you add if the month's in range and the amount is positive
   const monthNum = Number(month);
   const amtNum = Number(amt);
   const valid =
     Number.isInteger(monthNum) &&
     monthNum >= 1 &&
-    monthNum <= tenure &&
+    monthNum <= maxMonth &&
     Number.isFinite(amtNum) &&
     amtNum > 0;
 
@@ -71,7 +75,7 @@ export default function PrepaymentPlanner() {
                 <input
                   type="number"
                   min={1}
-                  max={tenure}
+                  max={maxMonth}
                   value={month}
                   onChange={(e) => setMonth(e.target.value)}
                   className="card px-3 py-2 rounded-lg w-full outline-none"
@@ -96,7 +100,7 @@ export default function PrepaymentPlanner() {
             </div>
             {!valid && (month !== "" || amt !== "") && (
               <p className="text-xs text-amber-600">
-                Month must be 1–{tenure} and amount greater than 0.
+                Month must be 1–{maxMonth} and amount greater than 0.
               </p>
             )}
           </div>
